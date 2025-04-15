@@ -64,13 +64,20 @@
         box-shadow: 0 4px 12px rgba(79, 70, 229, 0.2);
     }
 
-    .alert-success {
-        background: linear-gradient(135deg, #10b981, #059669);
+    .alert-success, .alert-danger {
         border: none;
         color: white;
         padding: 1rem;
         border-radius: 0.5rem;
         margin-bottom: 1.5rem;
+    }
+
+    .alert-success {
+        background: linear-gradient(135deg, #10b981, #059669);
+    }
+
+    .alert-danger {
+        background: linear-gradient(135deg, #ef4444, #b91c1c);
     }
 
     .action-buttons {
@@ -145,19 +152,21 @@
     </div>
 @endif
 
+@if(session('error'))
+    <div class="alert alert-danger d-flex align-items-center">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ session('error') }}
+    </div>
+@endif
+
 <!-- Main Card -->
 <div class="card">
     <div class="card-header">
-        <div class="d-flex justify-content-between align-items-center">
-            <h4 class="mb-0">
-                <!-- Tags Icon for Categories -->
-                <i class="fas fa-tags me-2 text-primary"></i>
-                Daftar Kategori Aset
-            </h4>
-        </div>
+        <h4 class="mb-0">
+            <i class="fas fa-tags me-2 text-primary"></i>
+            Daftar Kategori Aset
+        </h4>
     </div>
-</div>
-
 
     <div class="card-body">
         <div class="table-responsive">
@@ -184,8 +193,7 @@
                                     <form action="{{ route('admin.kategori-asset.destroy', $kategori->id_kategori_asset) }}" method="POST" class="d-inline">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                onclick="return confirm('Yakin ingin menghapus?')">
+                                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Yakin ingin menghapus?')">
                                             <i class="fas fa-trash me-1"></i>Hapus
                                         </button>
                                     </form>

@@ -15,8 +15,9 @@ class Opname extends Model
     protected $fillable = [
         'id_pengadaan',
         'tgl_opname',
-        'kondisi',
         'keterangan',
+        'jumlah_barang_rusak', // Menambahkan kolom jumlah_barang_rusak
+        'status_barang', // Menambahkan kolom status_barang
     ];
 
     // Relasi ke tabel Pengadaan
@@ -24,4 +25,6 @@ class Opname extends Model
     {
         return $this->belongsTo(Pengadaan::class, 'id_pengadaan');
     }
+
+
 }

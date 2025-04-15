@@ -24,6 +24,7 @@ class Pengadaan extends Model
         'tgl_pengadaan',
         'harga_barang',
         'nilai_barang',
+        'jumlah_barang_fisik',
         'fb',
         'keterangan'
     ];

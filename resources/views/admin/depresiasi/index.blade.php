@@ -116,6 +116,14 @@
     </div>
 @endif
 
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+@endif
+
 <!-- Main Card -->
 <div class="card">
     <div class="card-header">
@@ -141,7 +149,7 @@
                 <tbody>
                     @forelse($depresiasi as $item)
                         <tr>
-                            <td>{{ $item->id_depresiasi }}</td>
+                        <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->lama_depresiasi }}</td>
                             <td>{{ $item->keterangan }}</td>
                             <td>
@@ -177,4 +185,5 @@
         </div>
     </div>
 </div>
+
 @endsection

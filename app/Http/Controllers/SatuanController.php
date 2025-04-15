@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Satuan;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class SatuanController extends Controller
 {
@@ -46,7 +47,19 @@ class SatuanController extends Controller
 
     public function destroy($id)
     {
-        Satuan::destroy($id);
-        return redirect()->route('admin.satuan.index')->with('success', 'Data berhasil dihapus!');
+        try {
+            $pengadaan = Satuan::findOrFail($id);
+            $pengadaan->delete();
+
+            return redirect()->route('admin.satuan.index')
+                ->with('success', 'Data pengadaan berhasil dihapus.');
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('admin.satuan.index')
+                    ->with('error', 'ID ini masih dipakai di tabel lain. Hapus data terkait terlebih dahulu.');
+            }
+            return redirect()->route('admin.satuan.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }

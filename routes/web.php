@@ -25,9 +25,11 @@ Route::get('/', function () {
 // Middleware untuk route yang memerlukan autentikasi dan verifikasi email
 Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard Route
-    Route::get('/home', [HomeController::class, 'index'])->name('home');
+    Route::get('/home', [HomeController::class, 'home'])->name('home');
+    Route::get('/dashboard', [HomeController::class,'index'])->name('dashboard');
     Route::get('/export-pdf', [HomeController::class, 'exportPDF'])->name('export.pdf');
     Route::get('/cetak-laporan', [HomeController::class, 'cetakLaporan'])->name('cetak.laporan');
+    
 });
 
 // Profile routes untuk user yang sudah login
@@ -39,8 +41,6 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-// Route untuk admin (memerlukan role: admin)
-// Route untuk admin (memerlukan role: admin)
 // Route untuk admin dengan middleware dan prefix
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     

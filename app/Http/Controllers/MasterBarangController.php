@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\MasterBarang;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class MasterBarangController extends Controller
 {
@@ -16,8 +17,8 @@ class MasterBarangController extends Controller
         // Menambahkan pencarian dan paginasi
         $masterBarangs = MasterBarang::when($query, function ($queryBuilder, $query) {
             $queryBuilder->where('kode_barang', 'like', "%$query%")
-                         ->orWhere('nama_barang', 'like', "%$query%")
-                         ->orWhere('spesifikasi_teknis', 'like', "%$query%");
+                ->orWhere('nama_barang', 'like', "%$query%")
+                ->orWhere('spesifikasi_teknis', 'like', "%$query%");
         })->paginate(10);
 
         // Mengirim data ke view
@@ -71,12 +72,21 @@ class MasterBarangController extends Controller
     }
 
     // Menghapus data Master Barang
-    public function destroy(MasterBarang $masterBarang)
+    public function destroy($id)
     {
-        // Hapus data
-        $masterBarang->delete();
+        try {
+            $pengadaan = MasterBarang::findOrFail($id);
+            $pengadaan->delete();
 
-        // Redirect dengan pesan sukses
-        return redirect()->route('admin.master-barang.index')->with('success', 'Barang berhasil dihapus.');
+            return redirect()->route('admin.master-barang.index')
+                ->with('success', 'Data pengadaan berhasil dihapus.');
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('admin.master-barang.index')
+                    ->with('error', 'ID ini masih dipakai di tabel lain. Hapus data terkait terlebih dahulu.');
+            }
+            return redirect()->route('admin.master-barang.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }

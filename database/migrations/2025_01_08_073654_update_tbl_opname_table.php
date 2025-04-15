@@ -15,11 +15,12 @@ return new class extends Migration
             $table->unsignedBigInteger('id_opname')->autoIncrement();
             $table->unsignedBigInteger('id_pengadaan');
             $table->date('tgl_opname');
-            $table->string('kondisi', 25);
             $table->string('keterangan', 50)->nullable();
+            $table->integer('jumlah_barang_rusak')->default(0);
+            $table->enum('status_barang', ['baik', 'rusak', 'hilang', 'perbaikan']);
             $table->timestamps();
 
-            $table->foreign('id_pengadaan')->references('id_pengadaan')->on('tbl_pengadaan');
+            $table->foreign('id_pengadaan')->references('id_pengadaan')->on('tbl_pengadaan')->onDelete('cascade');
         });
     }
 

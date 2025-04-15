@@ -157,6 +157,14 @@
     </div>
     @endif
 
+    @if(session('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle me-2"></i>
+        {{ session('error') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     <!-- Enhanced Data Table -->
     <div class="card">
         <div class="card-header bg-white">
@@ -169,103 +177,112 @@
         <div class="card-body">
             <div class="table-responsive">
                 <table class="table table-hover">
-                <thead>
-    <tr>
-        <th class="text-center">ID</th>
-        <th>Master Barang</th>
-        <th>Depresiasi</th>
-        <th>Merk</th>
-        <th>Satuan</th>
-        <th>Sub Kategori Asset</th>
-        <th>Distributor</th>
-        <th>Kode Pengadaan</th>
-        <th>No Invoice</th>
-        <th>No Seri Barang</th>
-        <th>Tahun Produksi</th>
-        <th>Tanggal Pengadaan</th>
-        <th class="text-end">Harga Barang</th>
-        <th class="text-end">Nilai Barang</th>
-        <th class="text-center">Fb</th>
-        <th class="text-end">Depresiasi Per Bulan</th> <!-- Kolom baru -->
-        <th>Keterangan</th>
-        <th class="text-center">Aksi</th>
-    </tr>
-</thead>
-<tbody>
-    @forelse($pengadaans as $index => $pengadaan)
-    <tr>
-        <td class="text-center">{{ $index + 1 }}</td>
-        <td>{{ $pengadaan->masterBarang->nama_barang ?? 'N/A' }}</td>
-        <td>{{ $pengadaan->depresiasi->lama_depresiasi ?? 'N/A' }}</td>
-        <td>{{ $pengadaan->merk->merk ?? 'N/A' }}</td>
-        <td>{{ $pengadaan->satuan->satuan ?? 'N/A' }}</td>
-        <td>{{ $pengadaan->subKategoriAsset->sub_kategori_asset ?? 'N/A' }}</td>
-        <td>{{ $pengadaan->distributor->nama_distributor ?? 'N/A' }}</td>
-        <td><span class="fw-medium">{{ $pengadaan->kode_pengadaan }}</span></td>
-        <td>{{ $pengadaan->no_invoice }}</td>
-        <td>{{ $pengadaan->no_seri_barang }}</td>
-        <td>{{ $pengadaan->tahun_produksi }}</td>
-        <td>{{ date('d-m-Y', strtotime($pengadaan->tgl_pengadaan)) }}</td>
-        <td class="text-end">
-            <span class="fw-medium">Rp {{ number_format($pengadaan->harga_barang, 0, ',', '.') }}</span>
-        </td>
-        <td class="text-end">
-            <span class="fw-medium">Rp {{ number_format($pengadaan->nilai_barang, 0, ',', '.') }}</span>
-        </td>
-        <td class="text-center">
-            <span class="badge {{ $pengadaan->fb == 1 ? 'bg-success' : 'bg-danger' }}">
-                {{ $pengadaan->fb }}
-            </span>
-        </td>
-        <td class="text-end">
-            @php
-                $hargaBarang = $pengadaan->harga_barang;
-                $usiaBarang = $pengadaan->depresiasi->lama_depresiasi ?? 1; // Default usia 1 bulan jika tidak ada
-                $depresiasiPerBulan = $usiaBarang > 0 ? $hargaBarang / $usiaBarang : 0;
-            @endphp
-            <span class="fw-medium">Rp {{ number_format($depresiasiPerBulan, 0, ',', '.') }}</span>
-        </td>
-        <td>
-            <div class="keterangan-cell" data-bs-toggle="tooltip" data-bs-placement="top"
-                title="{{ $pengadaan->keterangan ?: 'Tidak ada keterangan' }}">
-                {{ $pengadaan->keterangan ?: 'Tidak ada keterangan' }}
-            </div>
-        </td>
-        <td class="text-center">
-            <div class="d-flex gap-2 justify-content-center">
-                <a href="{{ route('admin.pengadaan.edit', $pengadaan->id_pengadaan) }}"
-                    class="btn btn-warning btn-sm d-flex align-items-center justify-content-center"
-                    style="width: 100px">
-                    <i class="fas fa-edit me-1"></i>Edit
-                </a>
-                <form action="{{ route('admin.pengadaan.destroy', $pengadaan->id_pengadaan) }}"
-                    method="POST" class="d-inline">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
-                        style="width: 100px;"
-                        onclick="return confirm('Yakin ingin menghapus data ini?')">
-                        <i class="fas fa-trash me-1"></i>Hapus
-                    </button>
-                </form>
-            </div>
-        </td>
-    </tr>
-    @empty
-    <tr>
-        <td colspan="17" class="text-center py-4">
-            <div class="text-muted">
-                <i class="fas fa-info-circle me-2"></i>Data pengadaan tidak ditemukan.
-            </div>
-        </td>
-    </tr>
-    @endforelse
-</tbody>
+                    <thead>
+                        <tr>
+                            <th class="text-center">ID</th>
+                            <th>Master Barang</th>
+                            <th>Depresiasi</th>
+                            <th>Merk</th>
+                            <th>Satuan</th>
+                            <th>Sub Kategori Asset</th>
+                            <th>Distributor</th>
+                            <th>Kode Pengadaan</th>
+                            <th>No Invoice</th>
+                            <th>No Seri Barang</th>
+                            <th>Tahun Produksi</th>
+                            <th>Tanggal Pengadaan</th>
+                            <th class="text-end">Harga Barang</th>
+                            <th class="text-end">Nilai Barang</th>
+                            <th class="text-end">Jumlah Barang Fisik</th> <!-- Kolom baru -->
+                            <th class="text-center">Fb</th>
+                            <th class="text-end">Depresiasi Per Bulan</th> <!-- Kolom baru -->
+                            <th>Keterangan</th>
+                            <th class="text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($pengadaans as $index => $pengadaan)
+                        <tr>
+                            <td class="text-center">{{ $index + 1 }}</td>
+                            <td>{{ $pengadaan->masterBarang->nama_barang ?? 'N/A' }}</td>
+                            <td>{{ $pengadaan->depresiasi->lama_depresiasi ?? 'N/A' }}</td>
+                            <td>{{ $pengadaan->merk->merk ?? 'N/A' }}</td>
+                            <td>{{ $pengadaan->satuan->satuan ?? 'N/A' }}</td>
+                            <td>{{ $pengadaan->subKategoriAsset->sub_kategori_asset ?? 'N/A' }}</td>
+                            <td>{{ $pengadaan->distributor->nama_distributor ?? 'N/A' }}</td>
+                            <td><span class="fw-medium">{{ $pengadaan->kode_pengadaan }}</span></td>
+                            <td>{{ $pengadaan->no_invoice }}</td>
+                            <td>{{ $pengadaan->no_seri_barang }}</td>
+                            <td>{{ $pengadaan->tahun_produksi }}</td>
+                            <td>{{ date('d-m-Y', strtotime($pengadaan->tgl_pengadaan)) }}</td>
+                            <td class="text-end">
+                                <span class="fw-medium">Rp {{ number_format($pengadaan->harga_barang, 0, ',', '.') }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="fw-medium">Rp {{ number_format($pengadaan->nilai_barang, 0, ',', '.') }}</span>
+                            </td>
+                            <td class="text-end">
+                                <span class="fw-medium">{{ $pengadaan->jumlah_barang_fisik ?? 'N/A' }}</span>
+                            </td>
+                            <td class="text-center">
+                                @php
+                                $fbValue = $pengadaan->fb ?? 0; // Default ke 0 jika fb null
+                                @endphp
+                                <span class="badge {{ $fbValue == 1 ? 'bg-success' : 'bg-danger' }}">
+                                    {{ $fbValue == 1 ? 'Aktif' : 'Tidak Aktif' }}
+                                </span>
+                            </td>
+
+                            <td class="text-end">
+                                @php
+                                $hargaBarang = $pengadaan->harga_barang;
+                                $usiaBarang = $pengadaan->depresiasi->lama_depresiasi ?? 1; // Default usia 1 bulan jika tidak ada
+                                $depresiasiPerBulan = $usiaBarang > 0 ? $hargaBarang / $usiaBarang : 0;
+                                @endphp
+                                <span class="fw-medium">Rp {{ number_format($depresiasiPerBulan, 0, ',', '.') }}</span>
+                            </td>
+                            <td>
+                                <div class="keterangan-cell" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="{{ $pengadaan->keterangan ?: 'Tidak ada keterangan' }}">
+                                    {{ $pengadaan->keterangan ?: 'Tidak ada keterangan' }}
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="d-flex gap-2 justify-content-center">
+                                    <a href="{{ route('admin.pengadaan.edit', $pengadaan->id_pengadaan) }}"
+                                        class="btn btn-warning btn-sm d-flex align-items-center justify-content-center"
+                                        style="width: 100px">
+                                        <i class="fas fa-edit me-1"></i>Edit
+                                    </a>
+                                    <form action="{{ route('admin.pengadaan.destroy', $pengadaan->id_pengadaan) }}"
+                                        method="POST" class="d-inline">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+                                            style="width: 100px;"
+                                            onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                            <i class="fas fa-trash me-1"></i>Hapus
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="17" class="text-center py-4">
+                                <div class="text-muted">
+                                    <i class="fas fa-info-circle me-2"></i>Data pengadaan tidak ditemukan.
+                                </div>
+                            </td>
+                        </tr>
+                        @endforelse
+                    </tbody>
 
                 </table>
             </div>
         </div>
     </div>
+
 
     <!-- Enhanced Pagination -->
     <div class="d-flex justify-content-center mt-4">

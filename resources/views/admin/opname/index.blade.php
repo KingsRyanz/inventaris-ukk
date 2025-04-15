@@ -139,7 +139,8 @@
                         <th>ID</th>
                         <th>Kode Pengadaan</th>
                         <th>Tanggal Opname</th>
-                        <th>Kondisi</th>
+                        <th>Jumlah Rusak</th>
+                        <th>Status Barang</th>
                         <th>Keterangan</th>
                         <th class="text-center">Aksi</th>
                     </tr>
@@ -150,7 +151,8 @@
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $item->pengadaan->kode_pengadaan }}</td>
                             <td>{{ $item->tgl_opname }}</td>
-                            <td>{{ $item->kondisi }}</td>
+                            <td>{{ $item->jumlah_barang_rusak }}</td>
+                            <td>{{ ucfirst($item->status_barang) }}</td>
                             <td>{{ $item->keterangan }}</td>
                             <td>
                                 <div class="action-buttons justify-content-center">
@@ -172,7 +174,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6">
+                            <td colspan="9">
                                 <div class="empty-state">
                                     <i class="fas fa-info-circle mb-3 text-muted fa-2x"></i>
                                     <p class="mb-0">Tidak ada data opname</p>

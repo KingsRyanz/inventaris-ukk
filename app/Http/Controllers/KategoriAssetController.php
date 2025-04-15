@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\KategoriAsset;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class KategoriAssetController extends Controller
 {
@@ -99,10 +100,22 @@ class KategoriAssetController extends Controller
      * @param KategoriAsset $kategoriAsset
      * @return \Illuminate\Http\RedirectResponse
      */
-    public function destroy($id_kategori_asset)
+    public function destroy($id)
     {
-        $kategoriAsset = KategoriAsset::where('id_kategori_asset', $id_kategori_asset)->firstOrFail();
-        $kategoriAsset->delete();
-        return redirect()->route('admin.kategori-asset.index')->with('success', 'Kategori asset berhasil dihapus.');
+        try {
+            $pengadaan = KategoriAsset::findOrFail($id);
+            $pengadaan->delete();
+
+            return redirect()->route('admin.kategori-asset.index')
+                ->with('success', 'Data pengadaan berhasil dihapus.');
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('admin.kategori-asset.index')
+                    ->with('error', 'ID ini masih dipakai di tabel lain. Hapus data terkait terlebih dahulu.');
+            }
+            return redirect()->route('admin.kategori-asset.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }
+

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Lokasi;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class LokasiController extends Controller
 {
@@ -51,15 +52,21 @@ class LokasiController extends Controller
             ->with('success', 'Lokasi berhasil diupdate.');
     }
 
-    public function destroy(Lokasi $lokasi)
+    public function destroy($id)
     {
         try {
-            $lokasi->delete();
+            $pengadaan = Lokasi::findOrFail($id);
+            $pengadaan->delete();
+
             return redirect()->route('admin.lokasi.index')
-                ->with('success', 'Lokasi berhasil dihapus.');
-        } catch (\Exception $e) {
-            return redirect()->route('lokasi.index')
-                ->with('error', 'Lokasi tidak dapat dihapus karena masih digunakan.');
+                ->with('success', 'Data pengadaan berhasil dihapus.');
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('admin.lokasi.index')
+                    ->with('error', 'ID ini masih dipakai di tabel lain. Hapus data terkait terlebih dahulu.');
+            }
+            return redirect()->route('admin.lokasi.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
         }
     }
 }

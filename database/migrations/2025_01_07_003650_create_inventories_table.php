@@ -76,6 +76,7 @@ return new class extends Migration {
             $table->date('tgl_pengadaan');
             $table->integer('harga_barang');
             $table->integer('nilai_barang');
+            $table->integer('jumlah_barang_fisik')->default(0); // Menambahkan kolom jumlah_barang_fisik
             $table->enum('fb', ['0', '1']);
             $table->string('keterangan', 50)->nullable();
             $table->timestamps();
@@ -87,7 +88,6 @@ return new class extends Migration {
             $table->foreign('id_sub_kategori_asset')->references('id_sub_kategori_asset')->on('tbl_sub_kategori_asset');
             $table->foreign('id_distributor')->references('id_distributor')->on('tbl_distributor');
         });
-
     }
 
     public function down()

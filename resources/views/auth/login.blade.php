@@ -1,4 +1,3 @@
-<!-- resources/views/auth/login.blade.php -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -360,6 +359,24 @@
             -webkit-box-shadow: 0 0 0px 1000px rgba(0, 0, 0, 0) inset;
             transition: background-color 5000s ease-in-out 0s;
         }
+
+        .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+        }
+        .toggle-password:focus {
+            outline: none;
+            box-shadow: none;
+        }
+        .password-container {
+            position: relative;
+        }
     </style>
 </head>
 
@@ -399,7 +416,7 @@
                     @enderror
                 </div>
 
-                <div class="input-group">
+                <div class="input-group password-container">
                     <input type="password"
                         class="form-control @error('password') is-invalid animate-shake @enderror"
                         id="password"
@@ -407,6 +424,9 @@
                         placeholder="Password"
                         required>
                     <i class="ri-lock-2-line input-icon"></i>
+                    <button type="button" class="toggle-password" onclick="togglePassword()">
+                        <i class="ri-eye-off-line" id="toggleIcon"></i>
+                    </button>
                     @error('password')
                     <div class="error-message">{{ $message }}</div>
                     @enderror
@@ -441,20 +461,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        function togglePassword() {
+            const passwordInput = document.getElementById('password');
+            const toggleIcon = document.getElementById('toggleIcon');
+            
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('ri-eye-off-line');
+                toggleIcon.classList.add('ri-eye-line');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('ri-eye-line');
+                toggleIcon.classList.add('ri-eye-off-line');
+            }
+        }
+
         // Form validation
         (function() {
             'use strict'
-            var forms = document.querySelectorAll('.needs-validation')
-            Array.prototype.slice.call(forms)
-                .forEach(function(form) {
-                    form.addEventListener('submit', function(event) {
-                        if (!form.checkValidity()) {
-                            event.preventDefault()
-                            event.stopPropagation()
-                        }
-                        form.classList.add('was-validated')
-                    }, false)
-                })
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
         })()
 
         // Create particles
@@ -472,6 +506,7 @@
 
                 // Random movement
                 const tx = (Math.random() - 0.5) * 200;
+                const ty = (Math.random() - 0.5) * 200;  // Added missing ty variable
                 particle.style.setProperty('--tx', tx + 'px');
                 particle.style.setProperty('--ty', ty + 'px');
 
@@ -484,6 +519,7 @@
         }
 
         // Run particle animation
-        window.onload = function() {
-            createParticles();
-        };
+        window.addEventListener('load', createParticles);
+    </script>
+</body>
+</html>

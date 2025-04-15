@@ -95,13 +95,15 @@
         gap: 0.5rem;
     }
 
-    .btn-warning, .btn-danger {
+    .btn-warning,
+    .btn-danger {
         padding: 0.5rem 1rem;
         border-radius: 0.5rem;
         transition: all 0.2s ease;
     }
 
-    .btn-warning:hover, .btn-danger:hover {
+    .btn-warning:hover,
+    .btn-danger:hover {
         transform: translateY(-2px);
     }
 
@@ -147,10 +149,18 @@
 
 <!-- Success Notification -->
 @if(session('success'))
-    <div class="alert alert-success d-flex align-items-center">
-        <i class="fas fa-check-circle me-2"></i>
-        {{ session('success') }}
-    </div>
+<div class="alert alert-success d-flex align-items-center">
+    <i class="fas fa-check-circle me-2"></i>
+    {{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <i class="fas fa-exclamation-circle me-2"></i>
+    {{ session('error') }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
 @endif
 
 <!-- Main Card -->
@@ -178,42 +188,44 @@
                 </thead>
                 <tbody>
                     @forelse($lokasi as $item)
-                        <tr>
-                            <td>{{ $loop->iteration }}</td>
-                            <td>{{ $item->kode_lokasi }}</td>
-                            <td>{{ $item->nama_lokasi }}</td>
-                            <td>{{ $item->keterangan }}</td>
-                            <td>
-                                <div class="action-buttons justify-content-center">
-                                    <a href="{{ route('admin.lokasi.edit', $item->id_lokasi) }}" 
-                                       class="btn btn-warning btn-sm">
-                                        <i class="fas fa-edit me-1"></i>Edit
-                                    </a>
-                                    <form action="{{ route('admin.lokasi.destroy', $item->id_lokasi) }}" 
-                                          method="POST" class="d-inline">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger btn-sm"
-                                                onclick="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
-                                            <i class="fas fa-trash me-1"></i>Hapus
-                                        </button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{ $item->kode_lokasi }}</td>
+                        <td>{{ $item->nama_lokasi }}</td>
+                        <td>{{ $item->keterangan }}</td>
+                        <td>
+                            <div class="action-buttons justify-content-center">
+                                <a href="{{ route('admin.lokasi.edit', $item->id_lokasi) }}"
+                                    class="btn btn-warning btn-sm">
+                                    <i class="fas fa-edit me-1"></i>Edit
+                                </a>
+                                <form action="{{ route('admin.lokasi.destroy', $item->id_lokasi) }}"
+                                    method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-danger btn-sm d-flex align-items-center justify-content-center"
+                                        style="width: 100px;"
+                                        onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <i class="fas fa-trash me-1"></i>Hapus
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="5">
-                                <div class="empty-state">
-                                    <i class="fas fa-info-circle mb-3 text-muted fa-2x"></i>
-                                    <p class="mb-0">Tidak ada data lokasi</p>
-                                </div>
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="5">
+                            <div class="empty-state">
+                                <i class="fas fa-info-circle mb-3 text-muted fa-2x"></i>
+                                <p class="mb-0">Tidak ada data lokasi</p>
+                            </div>
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
 @endsection

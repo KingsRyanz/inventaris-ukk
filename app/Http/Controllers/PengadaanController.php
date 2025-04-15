@@ -10,6 +10,7 @@ use App\Models\Satuan;
 use App\Models\SubKategoriAsset;
 use App\Models\Distributor;
 use Illuminate\Http\Request;
+use Illuminate\Database\QueryException;
 
 class PengadaanController extends Controller
 {
@@ -63,9 +64,10 @@ class PengadaanController extends Controller
             'harga_barang' => 'required|numeric',
             'nilai_barang' => 'required|numeric',
             'fb' => 'required|in:0,1',
-            'keterangan' => 'nullable'
+            'keterangan' => 'nullable',
+            'jumlah_barang_fisik' => 'required|integer|min:0'  // Validasi jumlah_barang_fisik
         ]);
-  
+
         Pengadaan::create($request->all());
 
         return redirect()->route('admin.pengadaan.index')
@@ -110,7 +112,8 @@ class PengadaanController extends Controller
             'harga_barang' => 'required|numeric',
             'nilai_barang' => 'required|numeric',
             'fb' => 'required|in:0,1',
-            'keterangan' => 'nullable'
+            'keterangan' => 'nullable',
+            'jumlah_barang_fisik' => 'required|integer|min:0'  // Validasi jumlah_barang_fisik
         ]);
 
         $pengadaan = Pengadaan::findOrFail($id);
@@ -122,10 +125,19 @@ class PengadaanController extends Controller
 
     public function destroy($id)
     {
-        $pengadaan = Pengadaan::findOrFail($id);
-        $pengadaan->delete();
+        try {
+            $pengadaan = Pengadaan::findOrFail($id);
+            $pengadaan->delete();
 
-        return redirect()->route('admin.pengadaan.index')
-            ->with('success', 'Data pengadaan berhasil dihapus.');
+            return redirect()->route('admin.pengadaan.index')
+                ->with('success', 'Data pengadaan berhasil dihapus.');
+        } catch (QueryException $e) {
+            if ($e->getCode() == 23000) {
+                return redirect()->route('admin.pengadaan.index')
+                    ->with('error', 'ID ini masih dipakai di tabel lain. Hapus data terkait terlebih dahulu.');
+            }
+            return redirect()->route('admin.pengadaan.index')
+                ->with('error', 'Terjadi kesalahan saat menghapus data.');
+        }
     }
 }
